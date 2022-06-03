@@ -33,3 +33,43 @@ def articleDetailView(request, pk):
         return Response(serializer.data)
     except Exception as e:
         return Response({'details': f"{e}"}, status=status.HTTP_204_NO_CONTENT)
+
+
+#create article
+@api_view(['POST'])
+# @permission_classes((IsAuthenticated,))
+def create_article(request):
+    user = request.user
+    print(user)
+    data = request.data
+    print(data)
+    is_comment = data.get('isComment')
+    if is_comment:
+        article = Article.objects.get(id=data.get('postId'))
+        comment = ArticleComment.objects.create(
+            user=user,
+            article=article,
+            content=data.get('content'),
+        )
+        comment.save()
+        serializer = ArticleCommentSerializer(comment, many=False)
+        return Response(serializer.data)
+    else:
+        print(user)
+        content = data.get('content')
+        tags = data.get('tags')
+        title = data.get('title')
+        article = Article.objects.create(
+            user=user,
+            content=content,
+            title=title,
+        )
+        if tags is not None:
+            for tag_name in tags:
+                tag_instance = TopicTag.objects.filter(name=tag_name).first()
+                if not tag_instance:
+                    tag_instance = TopicTag.objects.create(name=tag_name)
+                article.tags.add(tag_instance)
+        article.save()
+    serializer = ArticleSerializer(article, many=False)
+    return Response(serializer.data)
