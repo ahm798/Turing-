@@ -9,7 +9,6 @@ from rest_framework.permissions import IsAuthenticated
 from account.models import TopicTag
 
 
-#list articles
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def articleListView(request):
@@ -24,7 +23,6 @@ def articleListView(request):
     return paginator.get_paginated_response(serializer.data)
 
 
-#article detail view
 @api_view(['GET'])
 def articleDetailView(request, pk):
     try:
@@ -35,7 +33,6 @@ def articleDetailView(request, pk):
         return Response({'details': f"{e}"}, status=status.HTTP_204_NO_CONTENT)
 
 
-#create article
 @api_view(['POST'])
 # @permission_classes((IsAuthenticated,))
 def create_article(request):
@@ -71,5 +68,101 @@ def create_article(request):
                     tag_instance = TopicTag.objects.create(name=tag_name)
                 article.tags.add(tag_instance)
         article.save()
+    serializer = ArticleSerializer(article, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['PUT'])
+@permission_classes((IsAuthenticated,))
+def articleUpdateView(request, pk):
+    try:
+        article = Article.objects.get(id=pk)
+        if article.user == request.user:
+            data = request.data
+            article.title = data.get('title')
+            article.content = data.get('content')
+            article.tags = data.get('tags')
+            article.save()
+            serializer = ArticleSerializer(article, many=False)
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    except Exception as e:
+        return Response({'details': f"{e}"}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['DELETE'])
+@permission_classes((IsAuthenticated,))
+def articleDeleteView(request, pk):
+    try:
+        article = Article.objects.get(id=pk)
+        if article.user == request.user:
+            article.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    except Exception as e:
+        return Response({'details': f"{e}"}, status=status.HTTP_204_NO_CONTENT)
+
+
+# ______________________________________________________Comment Upadte _________________________________________________#
+
+@api_view(['PUT'])
+@permission_classes((IsAuthenticated,))
+def articleCommentUpdateView(request, pk):
+    try:
+        comment = ArticleComment.objects.get(id=pk)
+        if comment.user == request.user:
+            serializer = ArticleCommentSerializer(comment, many=False)
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    except Exception as e:
+        return Response({'details': f"{e}"}, status=status.HTTP_204_NO_CONTENT)
+
+
+# ______________________________________________________Comment delete _________________________________________________#
+
+@api_view(['DELETE'])
+@permission_classes((IsAuthenticated,))
+def articleCommentDeleteView(request, pk):
+    try:
+        comment = ArticleComment.objects.get(id=pk)
+        if comment.user == request.user:
+            serializer = ArticleCommentSerializer(comment, many=False)
+            comment.delete()
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    except Exception as e:
+        return Response({'details': f"{e}"}, status=status.HTTP_204_NO_CONTENT)
+
+#____________________________________________________________Vote_______________________________________________________#
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def voteUpdateView(request):
+    user = request.user
+    data = request.data
+    article_id = data.get('postId')
+    comment_id = data.get('commentId')
+
+    article = Article.objects.get(id=article_id)
+
+    if comment_id:
+        comment = ArticleComment.objects.get(id=comment_id)
+        vote, created = ArticleVote.objects.get_or_create(article=article,comment=comment,user=user,value=1)
+        if not created:
+            vote.delete()
+        else:
+            vote.save()
+    else:
+        vote, created = ArticleVote.objects.get_or_create(article=article,user=user,value=1)
+        if not created:
+            vote.delete()
+        else:
+            vote.save()
+
     serializer = ArticleSerializer(article, many=False)
     return Response(serializer.data)
