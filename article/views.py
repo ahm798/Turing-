@@ -22,3 +22,14 @@ def articleListView(request):
     result_page = paginator.paginate_queryset(articles, request)
     serializer = ArticleSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
+
+
+#article detail view
+@api_view(['GET'])
+def articleDetailView(request, pk):
+    try:
+        article = Article.objects.get(id=pk)
+        serializer = ArticleSerializer(article, many=False)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({'details': f"{e}"}, status=status.HTTP_204_NO_CONTENT)
