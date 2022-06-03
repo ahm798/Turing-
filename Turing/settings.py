@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'api.apps.ApiConfig',
     'article.apps.ArticleConfig',
 
@@ -156,3 +157,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ALGOLIA = {
+    'APPLICATION_ID': '77L0OO6S3A',
+    'API_KEY': 'fcd8b241713a9fa5361429eb4d906552',
+    'INDEX_PREFIX':'tur'
+}
