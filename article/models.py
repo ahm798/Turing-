@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils import timezone
 
+from account.models import TopicTag
 
 
 class ModelQuerySet(models.QuerySet):
@@ -36,7 +37,7 @@ class Article(models.Model):
     title = models.CharField(max_length=500, default="untitled")
     slug = models.SlugField(max_length=250, unique_for_date='publish')
     content = models.TextField()
-    #
+    tags = models.ManyToManyField(TopicTag, related_name='article_tags', blank=True)
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -47,7 +48,8 @@ class Article(models.Model):
     def is_published(self) -> bool:
         return self.status == 'published'
 
-    #
+    def topic_tags(self):
+        return [self.tags.name]
 
     class Meta:
         ordering = ('-publish',)
