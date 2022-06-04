@@ -33,7 +33,7 @@ class Feed(models.Model):
         return qs
 
 
-class MumbleVote(models.Model):
+class FeedVote(models.Model):
     CHOICES = (
         ('upvote', 'upvote'),
         ('downvote', 'downvote'),
