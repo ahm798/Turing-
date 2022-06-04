@@ -11,7 +11,7 @@ from .serializers import FeedSerializer
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
-def mumbles(request):
+def feeds(request):
     user = request.user
     following = user.following.select_related('user')
 
@@ -35,15 +35,15 @@ def mumbles(request):
 
     # Add top ranked mumbles to feed after prioritizing follow list
     index = 0
-    for mumble in recentFeeds:
-        if mumble not in mumbles:
-            mumbles.insert(index, mumble)
+    for feed in recentFeeds:
+        if feed not in feeds:
+            feeds.insert(index, feed)
             index += 1
 
     # Add top ranked mumbles to feed after prioritizing follow list
     for feed in topFeeds:
         if feed not in feeds:
-            mumbles.append(feed)
+            feeds.append(feed)
 
     paginator = PageNumberPagination()
     paginator.page_size = 10
@@ -54,7 +54,7 @@ def mumbles(request):
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
-def mumble_details(request, pk):
+def feedDetailView(request, pk):
     try:
         feed = Feed.objects.get(id=pk)
         serializer = FeedSerializer(feed, many=False)
@@ -68,7 +68,7 @@ def mumble_details(request, pk):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
-def create_mumble(request):
+def createFeedView(request):
     user = request.user
     data = request.data
 
@@ -92,7 +92,7 @@ def create_mumble(request):
 
 @api_view(['PATCH'])
 @permission_classes((IsAuthenticated,))
-def edit_mumble(request, pk):
+def editFeedView(request, pk):
     user = request.user
     data = request.data
 
@@ -113,7 +113,7 @@ def edit_mumble(request, pk):
 
 @api_view(['DELETE'])
 @permission_classes((IsAuthenticated,))
-def delete_mumble(request, pk):
+def deleteFeedView(request, pk):
     user = request.user
     try:
         mumble = Feed.objects.get(id=pk)
@@ -127,7 +127,7 @@ def delete_mumble(request, pk):
 
 
 @api_view(['GET'])
-def mumble_comments(request, pk):
+def feedCommentView(request, pk):
     mumble = Feed.objects.get(id=pk)
     comments = mumble.mumble_set.all()
     serializer = FeedSerializer(comments, many=True)
@@ -136,7 +136,7 @@ def mumble_comments(request, pk):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
-def refeed(request):
+def refeedView(request):
     user = request.user
     data = request.data
     original_feed = Feed.objects.get(id=data['id'])
@@ -162,7 +162,7 @@ def refeed(request):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
-def update_vote(request):
+def voteUpdateView(request):
     user = request.user
     data = request.data
 
