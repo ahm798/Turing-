@@ -25,7 +25,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['turing-dev.herokuapp.com']
 if not DEBUG:
     ALLOWED_HOSTS += [config('ALLOWED_HOST')]
 CORS_ALLOW_ALL_ORIGINS = True
