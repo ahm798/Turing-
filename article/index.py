@@ -11,9 +11,9 @@ class ArticleIndex(AlgoliaIndex):
         'owner',
         'status'
     ]
-    tags = 'topic_tags'
-
-    settings = {
-        'searchableAttributes': ['title', 'content'],
-        'attributesForFaceting': ['status'],
-    }
+    # tags = 'topic_tags'
+    #
+    # settings = {
+    #     'searchableAttributes': ['title', 'content'],
+    #     'attributesForFaceting': ['status'],
+    # }
