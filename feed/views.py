@@ -21,26 +21,14 @@ def feeds(request):
     ids = [i.user.id for i in following]
     ids.append(user.id)
     print('IDS:', ids)
-
-    # Make sure parent==None is always on
-    # Query 5 mumbles form users you follow | TOP PRIORITY
-
     feeds = list(Feed.objects.filter(parent=None, user__id__in=ids).order_by("-created"))[0:5]
-    # mumbles = list(mumbles.filter(Q(user__userprofile__name__icontains=query) | Q(content__icontains=query)))
-
     recentFeeds = Feed.objects.filter(Q(parent=None) & Q(vote_rank__gte=0) & Q(remumble=None)).order_by("-created")[0:5]
-
-    # Query top ranked mumbles and attach to end of original queryset
     topFeeds = Feed.objects.filter(Q(parent=None)).order_by("-vote_rank", "-created")
-
-    # Add top ranked mumbles to feed after prioritizing follow list
     index = 0
     for feed in recentFeeds:
         if feed not in feeds:
             feeds.insert(index, feed)
             index += 1
-
-    # Add top ranked mumbles to feed after prioritizing follow list
     for feed in topFeeds:
         if feed not in feeds:
             feeds.append(feed)
@@ -167,18 +155,14 @@ def voteUpdateView(request):
     data = request.data
 
     feed = Feed.objects.get(id=data['post_id'])
-    # What if user is trying to remove their vote?
     vote, created = FeedVote.objects.get_or_create(feed=feed, user=user)
 
     if vote.value == data.get('value'):
-        # If same value is sent, user is clicking on vote to remove it
         vote.delete()
     else:
 
         vote.value = data['value']
         vote.save()
-
-    # We re-query the vote to get the latest vote rank value
     mumble = Feed.objects.get(id=data['post_id'])
     serializer = FeedSerializer(mumble, many=False)
 
