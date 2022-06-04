@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'api.apps.ApiConfig',
     'article.apps.ArticleConfig',
-    'account.apps.AccountConfig'
+    'account.apps.AccountConfig',
+    'search.apps.SearchConfig',
 
 ]
 
