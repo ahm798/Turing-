@@ -49,7 +49,8 @@ class Article(models.Model):
         return self.status == 'published'
 
     def topic_tags(self):
-        return [self.tags.name]
+        qs =self.tags.all()
+        return [tag.name for tag in qs]
 
     class Meta:
         ordering = ('-publish',)
