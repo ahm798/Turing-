@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from ckeditor.fields import RichTextField
+
 import uuid
 
 
@@ -9,7 +9,7 @@ class Feed(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="feeds")
     parent =models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
     refeed = models.ForeignKey("self", on_delete=models.CASCADE, related_name='refeeds', null=True, blank=True)
-    content = RichTextField(null=True, blank=True)
+    content = models.TextField(null=True, blank=True)
     image = models.ImageField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
