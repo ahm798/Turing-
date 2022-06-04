@@ -1,1 +1,1 @@
-web: gunicorn Turing.wsgi --log-file -
+web gunicorn Turing.wsgi --log-file -
