@@ -16,7 +16,7 @@ class Feed(models.Model):
     vote_rank = models.IntegerField(blank=True, null=True, default=0)
     comment_count = models.IntegerField(blank=True, null=True, default=0)
     share_count = models.IntegerField(blank=True, null=True, default=0)
-    votes = models.ManyToManyField(User, related_name='mumble_user', blank=True, through='MumbleVote')
+    votes = models.ManyToManyField(User, related_name='feed_user', blank=True, through='FeedVote')
 
 
     class Meta:
