@@ -4,42 +4,33 @@ from ckeditor.fields import RichTextField
 import uuid
 
 
-# This needs to be shareable
 class Feed(models.Model):
-    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
-    # For re-mumble (Share) functionality
+    id = models.UUIDField(default=uuid.uuid4,  unique=True, primary_key=True, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="feeds")
+    parent =models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
     refeed = models.ForeignKey("self", on_delete=models.CASCADE, related_name='refeeds', null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # content is allowed to be plan for remumbles
     content = RichTextField(null=True, blank=True)
     image = models.ImageField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     vote_rank = models.IntegerField(blank=True, null=True, default=0)
     comment_count = models.IntegerField(blank=True, null=True, default=0)
     share_count = models.IntegerField(blank=True, null=True, default=0)
-    created = models.DateTimeField(auto_now_add=True)
-    votes = models.ManyToManyField(User, related_name='feedowner', blank=True, through='feedvote')
-    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    votes = models.ManyToManyField(User, related_name='mumble_user', blank=True, through='MumbleVote')
+
 
     class Meta:
         ordering = ['-created']
 
-    def __str__(self):
-        try:
-            content = self.content[0:80]
-        except Exception:
-            content = 'Remumbled: ' + str(self.refeed.content[0:80])
-        return content
-
     @property
     def shares(self):
-        queryset = self.refeeds.all()
-        return queryset
+        qs = self.refeeds.all()
+        return qs
 
     @property
     def comments(self):
-        # Still need a way to get all sub elemsnts
-        queryset = self.feed_set.all()
-        return queryset
+        qs = self.feed_set.all()
+        return qs
 
 
 class MumbleVote(models.Model):
@@ -49,9 +40,9 @@ class MumbleVote(models.Model):
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    mumble = models.ForeignKey(Feed, on_delete=models.CASCADE, null=True, blank=True)
+    feed = models.ForeignKey(Feed, on_delete=models.CASCADE, null=True, blank=True)
     value = models.CharField(max_length=20, choices=CHOICES)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
     def __str__(self):
-        return str(self.user) + ' ' + str(self.value) + '"' + str(self.mumble) + '"'
+        return str(self.user) + ' ' + str(self.value) + '"' + str(self.feed) + '"'
