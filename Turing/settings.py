@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 import os
-
+from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,13 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-w2uy*9dwzin!43apz41si1nm^&j-zxa_i=_y2!1d6%^3rf-5%u'
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG')
+DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = ['127.0.0.1', ]
 if not DEBUG:
-    ALLOWED_HOSTS += [os.environ.get('ALLOWED_HOST')]
+    ALLOWED_HOSTS += [config('ALLOWED_HOST')]
 CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
@@ -123,11 +123,11 @@ DATABASES = {
 
 # ____________________________postgres_____________________________
 
-POSTGRES_DB = os.environ.get("POSTGRES_DB")  # database name
-POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD")  # database user password
-POSTGRES_USER = os.environ.get("POSTGRES_USER")  # database username
-POSTGRES_HOST = os.environ.get("POSTGRES_HOST")  # database host
-POSTGRES_PORT = os.environ.get("POSTGRES_PORT")  # database port
+POSTGRES_DB = config("POSTGRES_DB")  # database name
+POSTGRES_PASSWORD = config("POSTGRES_PASSWORD")  # database user password
+POSTGRES_USER = config("POSTGRES_USER")  # database username
+POSTGRES_HOST = config("POSTGRES_HOST")  # database host
+POSTGRES_PORT = config("POSTGRES_PORT")  # database port
 
 POSTGRES_READY = (
         POSTGRES_DB is not None
