@@ -8,7 +8,7 @@ class ArticleIndex(AlgoliaIndex):
     fields=[
         'title',
         'content',
-        'owner',
+        'user',
         'status'
     ]
     # tags = 'topic_tags'

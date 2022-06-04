@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'corsheaders',
+    'algoliasearch_django',
     'api.apps.ApiConfig',
     'article.apps.ArticleConfig',
     'account.apps.AccountConfig',
@@ -202,9 +203,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
-
 ALGOLIA = {
-    'APPLICATION_ID': '77L0OO6S3A',
-    'API_KEY': 'fcd8b241713a9fa5361429eb4d906552',
-    'INDEX_PREFIX':'tur'
+    'APPLICATION_ID':os.environ.get('APPLICATION_ID'),
+    'API_KEY':os.environ.get('API_KEY'),
+    'INDEX_PREFIX': os.environ.get('INDEX_PREFIX')
 }
+
