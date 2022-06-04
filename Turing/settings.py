@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = 'django-insecure-w2uy*9dwzin!43apz41si1nm^&j-zxa_i=_y2!1d6%^3rf-5%u'
 SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG')
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'turing-dev.herokuapp.com']
+ALLOWED_HOSTS = []
 if not DEBUG:
     ALLOWED_HOSTS += [config('ALLOWED_HOST')]
 CORS_ALLOW_ALL_ORIGINS = True
