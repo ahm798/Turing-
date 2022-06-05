@@ -28,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['turing-dev.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'turing-dev.herokuapp.com']
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -211,8 +211,8 @@ REST_FRAMEWORK = {
     )
 }
 ALGOLIA = {
-    'APPLICATION_ID':os.environ.get('APPLICATION_ID'),
-    'API_KEY':os.environ.get('API_KEY'),
-    'INDEX_PREFIX': os.environ.get('INDEX_PREFIX')
+    'APPLICATION_ID':config('APPLICATION_ID'),
+    'API_KEY':config('API_KEY'),
+    'INDEX_PREFIX': config('INDEX_PREFIX')
 }
 
