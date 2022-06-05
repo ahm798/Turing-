@@ -22,7 +22,7 @@ def feeds(request):
     ids.append(user.id)
     print('IDS:', ids)
     feeds = list(Feed.objects.filter(parent=None, user__id__in=ids).order_by("-created"))[0:5]
-    recentFeeds = Feed.objects.filter(Q(parent=None) & Q(vote_rank__gte=0) & Q(remumble=None)).order_by("-created")[0:5]
+    recentFeeds = Feed.objects.filter(Q(parent=None) & Q(vote_rank__gte=0) & Q(refeed=None)).order_by("-created")[0:5]
     topFeeds = Feed.objects.filter(Q(parent=None)).order_by("-vote_rank", "-created")
     index = 0
     for feed in recentFeeds:
@@ -63,18 +63,18 @@ def createFeedView(request):
     is_comment = data.get('isComment')
     if is_comment:
         parent = Feed.objects.get(id=data['postId'])
-        mumble = Feed.objects.create(
+        feed = Feed.objects.create(
             parent=parent,
             user=user,
             content=data['content'],
         )
     else:
-        mumble = Feed.objects.create(
+        feed = Feed.objects.create(
             user=user,
             content=data['content']
         )
 
-    serializer = FeedSerializer(mumble, many=False)
+    serializer = FeedSerializer(feed, many=False)
     return Response(serializer.data)
 
 
@@ -85,11 +85,11 @@ def editFeedView(request, pk):
     data = request.data
 
     try:
-        mumble = Feed.objects.get(id=pk)
-        if user != mumble.user:
+        feed = Feed.objects.get(id=pk)
+        if user != feed.user:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
-            serializer = FeedSerializer(mumble, data=data)
+            serializer = FeedSerializer(feed, data=data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -104,11 +104,11 @@ def editFeedView(request, pk):
 def deleteFeedView(request, pk):
     user = request.user
     try:
-        mumble = Feed.objects.get(id=pk)
-        if user != mumble.user:
+        feed = Feed.objects.get(id=pk)
+        if user != feed.user:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
-            mumble.delete()
+            feed.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
     except Exception as e:
         return Response({'details': f"{e}"}, status=status.HTTP_204_NO_CONTENT)
@@ -116,8 +116,8 @@ def deleteFeedView(request, pk):
 
 @api_view(['GET'])
 def feedCommentView(request, pk):
-    mumble = Feed.objects.get(id=pk)
-    comments = mumble.mumble_set.all()
+    feed = Feed.objects.get(id=pk)
+    comments = feed.feed_set.all()
     serializer = FeedSerializer(comments, many=True)
     return Response(serializer.data)
 
@@ -129,20 +129,20 @@ def refeedView(request):
     data = request.data
     original_feed = Feed.objects.get(id=data['id'])
     if original_feed.user == user:
-        return Response({'detail': 'You can not remumble your own mumble.'}, status=status.HTTP_403_FORBIDDEN)
+        return Response({'detail': 'You can not refeed your own feed.'}, status=status.HTTP_403_FORBIDDEN)
     try:
-        mumble = Feed.objects.filter(
-            remumble=original_feed,
+        feed = Feed.objects.filter(
+            refeed=original_feed,
             user=user,
         )
-        if mumble.exists():
-            return Response({'detail': 'Already Mumbled'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        if feed.exists():
+            return Response({'detail': 'Already feeded'}, status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
-            mumble = Feed.objects.create(
-                remumble=original_feed,
+            feed = Feed.objects.create(
+                refeed=original_feed,
                 user=user,
             )
-        serializer = FeedSerializer(mumble, many=False)
+        serializer = FeedSerializer(feed, many=False)
         return Response(serializer.data)
     except Exception as e:
         return Response({'detail': f'{e}'}, status=status.HTTP_403_FORBIDDEN)
@@ -163,7 +163,7 @@ def voteUpdateView(request):
 
         vote.value = data['value']
         vote.save()
-    mumble = Feed.objects.get(id=data['post_id'])
-    serializer = FeedSerializer(mumble, many=False)
+    feed = Feed.objects.get(id=data['post_id'])
+    serializer = FeedSerializer(feed, many=False)
 
     return Response(serializer.data)
