@@ -29,7 +29,7 @@ class FeedSerializer(serializers.ModelSerializer):
             return None
 
     def get_up_voters(self, obj):
-        voters = obj.votes.through.objects.filter(mumble=obj, value='upvote').values_list('user', flat=True)
+        voters = obj.votes.through.objects.filter(feed=obj, value='upvote').values_list('user', flat=True)
         voter_objects = obj.votes.filter(id__in=voters)
         serializer = UserSerializer(voter_objects, many=True)
         return serializer.data
