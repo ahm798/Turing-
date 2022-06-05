@@ -1,10 +1,6 @@
-from django.contrib.auth.models import User
-from django.db.models.signals import post_delete, post_save, pre_save
-
+from django.db.models.signals import post_save
 from article.models import Article
 from feed.models import Feed
-from account.models import UserProfile
-
 from .models import Notification
 
 
