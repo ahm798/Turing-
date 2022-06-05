@@ -3,12 +3,12 @@ from .models import Feed, FeedVote
 from .utils import update_comment_counts, update_refeed_counts
 
 
-def update_mumble(sender, instance, created, **kwargs):
+def update_refeed(sender, instance, created, **kwargs):
     if created and instance.parent:
         update_comment_counts(instance.parent, 'add')
 
-    if instance.remumble:
-        parent = instance.remumble
+    if instance.refeed:
+        parent = instance.refeed
         update_refeed_counts(parent, 'add')
 
 
@@ -25,7 +25,7 @@ def delete_feed_comments(sender, instance, **kwargs):
         print('refeed associated with comment was deleted')
 
 
-post_save.connect(update_mumble, sender=Feed)
+post_save.connect(update_refeed, sender=Feed)
 post_delete.connect(delete_feed_comments, sender=Feed)
 
 
@@ -37,7 +37,7 @@ def vote_updated(sender, instance, **kwargs):
         feed.vote_rank = (up_votes - down_votes)
         feed.save()
     except Exception as e:
-        print('mumble the vote was associated with was already deleted')
+        print('feed the vote was associated with was already deleted')
 
 
 post_save.connect(vote_updated, sender=FeedVote)
