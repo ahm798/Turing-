@@ -311,7 +311,7 @@ def send_activation_email(request):
     user = request.user
     user_profile = UserProfile.objects.get(user=user)
     try:
-        mail_subject = 'Verify your Mumble account.'
+        mail_subject = 'Verify your feed account.'
         message = render_to_string('verify-email.html', {
             'user': user_profile,
             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
