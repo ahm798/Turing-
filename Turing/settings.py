@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'article.apps.ArticleConfig',
     'account.apps.AccountConfig',
     'search.apps.SearchConfig',
-    'feed.apps.FeedConfig'
+    'feed.apps.FeedConfig',
+    'notification.apps.NotificationConfig'
 
 ]
 
