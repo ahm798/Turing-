@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 import os
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,13 +22,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w2uy*9dwzin!43apz41si1nm^&j-zxa_i=_y2!1d6%^3rf-5%u'
 
+# SECRET_KEY = 'django-insecure-w2uy*9dwzin!43apz41si1nm^&j-zxa_i=_y2!1d6%^3rf-5%u'
+SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['turing-dev.herokuapp.com']
 
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
@@ -123,11 +127,13 @@ DATABASES = {
 
 #____________________________postgres_____________________________
 
-POSTGRES_DB = os.environ.get("POSTGRES_DB") #database name
-POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD") # database user password
-POSTGRES_USER = os.environ.get("POSTGRES_USER") # database username
-POSTGRES_HOST = os.environ.get("POSTGRES_HOST") # database host
-POSTGRES_PORT = os.environ.get("POSTGRES_PORT") # database port
+
+POSTGRES_DB = config("POSTGRES_DB")  # database name
+POSTGRES_PASSWORD = config("POSTGRES_PASSWORD")  # database user password
+POSTGRES_USER = config("POSTGRES_USER")  # database username
+POSTGRES_HOST = config("POSTGRES_HOST")  # database host
+POSTGRES_PORT = config("POSTGRES_PORT")  # database port
+
 
 POSTGRES_READY = (
     POSTGRES_DB is not None
@@ -189,7 +195,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT=os.path.join(BASE_DIR, 'statics')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
