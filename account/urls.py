@@ -9,7 +9,6 @@ from rest_framework_simplejwt.views import (
 app_name = 'users-api'
 
 urlpatterns = [
-    #api/users/
     path('', views.users, name='users'),
     path('recommended/', views.users_recommended, name="users-recommended"),
 
