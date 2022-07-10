@@ -24,6 +24,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+
+from notification.models import Notification
 from .serializers import MyTokenObtainPairSerializer
 
 from article.serializers import ArticleSerializer
@@ -73,9 +75,10 @@ class RegisterView(APIView):
                 email=email,
                 password=make_password(password)
             )
+            print("user created")
             serializer = UserSerializerWithToken(user, many=False)
         except Exception as e:
-            print(e)
+            print("error")
             return Response({'detail': f'{e}'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
 
@@ -195,39 +198,39 @@ def update_interests(request):
     return Response(serializer.data)
 
 
-# @api_view(['POST'])
-# @permission_classes((IsAuthenticated,))
-# def follow_user(request, username):
-#     user = request.user
-#     try:
-#         user_to_follow = User.objects.get(username=username)
-#         user_to_follow_profile = user_to_follow.userprofile
-#
-#         if user == user_to_follow:
-#             return Response('You can not follow yourself')
-#
-#         if user in user_to_follow_profile.followers.all():
-#             user_to_follow_profile.followers.remove(user)
-#             user_to_follow_profile.followers_count = user_to_follow_profile.followers.count()
-#             user_to_follow_profile.save()
-#             return Response('User unfollowed')
-#         else:
-#             user_to_follow_profile.followers.add(user)
-#             user_to_follow_profile.followers_count = user_to_follow_profile.followers.count()
-#             user_to_follow_profile.save()
-#             # doing this as a signal is much more difficult and hacky
-#             Notification.objects.create(
-#                 to_user=user_to_follow,
-#                 created_by=user,
-#                 notification_type='follow',
-#                 followed_by=user,
-#                 content=f"{user.userprofile.name} started following you."
-#             )
-#             return Response('User followed')
-#     except Exception as e:
-#         message = {'detail': f'{e}'}
-#         return Response(message, status=status.HTTP_204_NO_CONTENT)
-#
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def follow_user(request, username):
+    user = request.user
+    try:
+        user_to_follow = User.objects.get(username=username)
+        user_to_follow_profile = user_to_follow.userprofile
+
+        if user == user_to_follow:
+            return Response('You can not follow yourself')
+
+        if user in user_to_follow_profile.followers.all():
+            user_to_follow_profile.followers.remove(user)
+            user_to_follow_profile.followers_count = user_to_follow_profile.followers.count()
+            user_to_follow_profile.save()
+            return Response('User unfollowed')
+        else:
+            user_to_follow_profile.followers.add(user)
+            user_to_follow_profile.followers_count = user_to_follow_profile.followers.count()
+            user_to_follow_profile.save()
+            # doing this as a signal is much more difficult and hacky
+            Notification.objects.create(
+                to_user=user_to_follow,
+                created_by=user,
+                notification_type='follow',
+                followed_by=user,
+                content=f"{user.userprofile.name} started following you."
+            )
+            return Response('User followed')
+    except Exception as e:
+        message = {'detail': f'{e}'}
+        return Response(message, status=status.HTTP_204_NO_CONTENT)
+
 
 class UserProfileUpdate(APIView):
     permission_classes = [IsAuthenticated]

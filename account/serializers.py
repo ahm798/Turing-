@@ -81,8 +81,8 @@ class UserSerializerWithToken(UserSerializer):
         token = RefreshToken.for_user(obj)
 
         token['username'] = obj.username
-        token['name'] = obj.userprofile.name
-        token['profile_pic'] = obj.userprofile.profile_pic.url
+        token['name'] = obj.userprofile.name or obj.username
+        token['profile_pic'] = obj.userprofile.profile_pic.url or None
         token['is_staff'] = obj.is_staff
         token['id'] = obj.id
         return str(token.access_token)
